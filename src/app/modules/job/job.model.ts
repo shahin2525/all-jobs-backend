@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from 'mongoose';
+import { model, Schema } from 'mongoose';
 import { IJob } from './job.interface';
 
 const JobSchema = new Schema<IJob>(

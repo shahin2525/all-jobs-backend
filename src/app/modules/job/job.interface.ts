@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 export interface IJob {
   title: string;
   description: string;
@@ -6,5 +8,5 @@ export interface IJob {
   source: 'own' | 'third-party';
   isCompliant: boolean;
   applyLink?: string;
-  postedBy: string;
+  postedBy: Types.ObjectId;
 }

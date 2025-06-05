@@ -1,13 +1,3 @@
-// export type TUser = {
-//   name: string;
-//   email: string;
-//   password: string;
-
-//   role: 'admin' | 'recruiter' | 'employee';
-//   status: 'active' | 'blocked';
-//   isDeleted: boolean;
-//   changePasswordAt?: Date;
-// };
 export type TUser = {
   _id?: string; // For MongoDB (or 'id' for SQL)
   name: {
