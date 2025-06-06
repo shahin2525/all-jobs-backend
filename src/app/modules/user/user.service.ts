@@ -3,7 +3,8 @@ import { User } from './user.model';
 
 // Create a new user
 const createUserIntoDB = async (payload: TUser) => {
-  if (await User.isUserExists(payload.email)) {
+  const existsUser = await User.findOne({ email: payload.email });
+  if (existsUser) {
     throw new Error('User already exists');
   }
   const result = await User.create(payload);
@@ -12,7 +13,11 @@ const createUserIntoDB = async (payload: TUser) => {
 
 // Get a single user by ID
 const getSingleUserFromDB = async (id: string) => {
-  if (!(await User.doesUserExists(id))) {
+  //   if (!(await User.doesUserExists(id))) {
+  //     throw new Error('User ID does not exist');
+  //   }
+  const idExists = await User.findById({ _id: id });
+  if (idExists) {
     throw new Error('User ID does not exist');
   }
   const result = await User.findById(id).select('-password');
@@ -27,7 +32,11 @@ const getAllUserFromDB = async () => {
 
 // Delete a user by ID
 const deleteUserFromDB = async (id: string) => {
-  if (!(await User.doesUserExists(id))) {
+  //   if (!(await User.doesUserExists(id))) {
+  //     throw new Error('User ID does not exist');
+  //   }
+  const idExists = await User.findById({ _id: id });
+  if (idExists) {
     throw new Error('User ID does not exist');
   }
   const result = await User.findByIdAndDelete(id);
