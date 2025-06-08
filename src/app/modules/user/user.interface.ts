@@ -1,3 +1,5 @@
+import { USER_ROLE } from './user.const';
+
 export type TUser = {
   _id?: string; // For MongoDB (or 'id' for SQL)
   name: {
@@ -22,3 +24,4 @@ export type TUser = {
   createdAt: Date;
   updatedAt: Date;
 };
+export type TUserRole = keyof typeof USER_ROLE;
