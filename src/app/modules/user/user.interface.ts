@@ -1,7 +1,7 @@
 import { USER_ROLE } from './user.const';
 
 export type TUser = {
-  _id?: string; // For MongoDB (or 'id' for SQL)
+  // _id?: string;
   name: {
     firstName: string;
     lastName: string;
@@ -10,7 +10,7 @@ export type TUser = {
   password: string; // Will be hashed
   phone?: string; // Optional for contact
   role: 'admin' | 'recruiter' | 'candidate'; // Renamed 'employee' to 'candidate'
-  status: 'active' | 'blocked' | 'pending'; // Added 'pending' for email verification
+  isActive: boolean; // Added 'pending' for email verification
   isVerified: boolean; // Better than isDeleted for GDPR compliance
   lastLogin?: Date;
   passwordChangedAt?: Date; // Renamed for clarity

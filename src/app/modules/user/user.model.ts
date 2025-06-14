@@ -14,10 +14,10 @@ const userSchema = new Schema(
       enum: ['admin', 'recruiter', 'candidate'],
       default: 'candidate',
     },
-    status: {
-      type: String,
-      enum: ['active', 'blocked', 'pending'],
-      default: 'pending',
+    isActive: {
+      type: Boolean,
+
+      default: true,
     },
     isVerified: { type: Boolean, default: false },
     passwordChangedAt: Date,

@@ -23,7 +23,7 @@ export const TUserSchema = z
       .refine(validator.isMobilePhone, 'Invalid phone number')
       .optional(),
     role: z.enum(['admin', 'recruiter', 'candidate']).default('candidate'),
-    status: z.enum(['active', 'blocked', 'pending']).default('pending'),
+    isActive: z.boolean().default(true),
     isVerified: z.boolean().default(false),
     passwordChangedAt: z.date().optional(),
     passwordResetToken: z.string().optional(),
