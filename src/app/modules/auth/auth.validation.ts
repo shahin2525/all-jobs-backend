@@ -51,21 +51,29 @@
 // auth.validation.ts
 import { z } from 'zod';
 
-export const loginUserValidationSchema = z.object({
+const loginUserValidationSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
 });
 
-export const changePasswordValidationSchema = z.object({
+const changePasswordValidationSchema = z.object({
   oldPassword: z.string().min(6),
   newPassword: z.string().min(6),
 });
 
-export const forgetPasswordValidationSchema = z.object({
+const forgetPasswordValidationSchema = z.object({
   email: z.string().email(),
 });
 
-export const resetPasswordValidationSchema = z.object({
+const resetPasswordValidationSchema = z.object({
   token: z.string(),
   newPassword: z.string().min(6),
 });
+
+export const AuthValidations = {
+  loginUserValidationSchema,
+  changePasswordValidationSchema,
+
+  forgetPasswordValidationSchema,
+  resetPasswordValidationSchema,
+};

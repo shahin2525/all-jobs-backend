@@ -10,7 +10,7 @@ import AppError from '../../error/appError';
 import { StatusCodes } from 'http-status-codes';
 
 // 🔐 Login
-export const loginUser = async (payload: ILoginInput) => {
+const loginUser = async (payload: ILoginInput) => {
   const { email, password } = payload;
 
   const user = await User.findOne({ email });
@@ -27,7 +27,7 @@ export const loginUser = async (payload: ILoginInput) => {
     isActive: user?.isActive,
     role: user?.role,
   };
-  const token = createToken(
+  const accessToken = createToken(
     jwtPayload,
     config.access_secret as string,
     config.jwt_access_expire_in as string,
@@ -39,7 +39,7 @@ export const loginUser = async (payload: ILoginInput) => {
   );
 
   return {
-    token,
+    accessToken,
     refreshToken,
     // user: {
     //   _id: user._id,
@@ -50,7 +50,7 @@ export const loginUser = async (payload: ILoginInput) => {
 };
 
 // 🔁 Refresh Token
-export const refreshToken = async (token: string) => {
+const refreshToken = async (token: string) => {
   try {
     const decoded = verifyToken(token, config.refresh_secret as string);
 
@@ -88,7 +88,7 @@ export const refreshToken = async (token: string) => {
 };
 
 // 🔑 Change Password
-export const changePassword = async (
+const changePassword = async (
   userId: string,
   oldPassword: string,
   newPassword: string,
@@ -119,7 +119,7 @@ export const changePassword = async (
 };
 
 // ❓ Forget Password
-export const forgetPassword = async (email: string) => {
+const forgetPassword = async (email: string) => {
   const user = await User.findOne({ email });
   if (!user)
     throw new AppError(StatusCodes.NOT_FOUND, 'No user found with this email');
@@ -146,7 +146,7 @@ export const forgetPassword = async (email: string) => {
 };
 
 // 🔄 Reset Password
-export const resetPassword = async (token: string, newPassword: string) => {
+const resetPassword = async (token: string, newPassword: string) => {
   try {
     const decoded = verifyToken(token, config.refresh_secret as string);
 
@@ -162,4 +162,12 @@ export const resetPassword = async (token: string, newPassword: string) => {
   } catch {
     throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid or expired token');
   }
+};
+
+export const AuthServices = {
+  loginUser,
+  changePassword,
+  refreshToken,
+  forgetPassword,
+  resetPassword,
 };

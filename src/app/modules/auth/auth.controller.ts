@@ -1,17 +1,17 @@
 import { RequestHandler } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import config from '../../config';
-import * as AuthServices from './auth.service';
-import * as AuthValidations from './auth.validation';
+import { AuthValidations } from './auth.validation';
+import { AuthServices } from './auth.service';
 
 // 🔐 Login
-export const loginUser: RequestHandler = async (req, res, next) => {
+const loginUser: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body;
-    const validatedData = AuthValidations.userLoginValidation.parse(data);
+    const validatedData = AuthValidations.loginUserValidationSchema.parse(data);
     const result = await AuthServices.loginUser(validatedData);
 
-    const { token: accessToken, refreshToken } = result;
+    const { accessToken, refreshToken } = result;
 
     res.cookie('refreshToken', refreshToken, {
       secure: config.NODE_ENV === 'production',
@@ -23,7 +23,7 @@ export const loginUser: RequestHandler = async (req, res, next) => {
       success: true,
       message: 'Login successful',
       statusCode: StatusCodes.OK,
-      data: { accessToken },
+      data: { accessToken, refreshToken },
     });
   } catch (error) {
     next(error);
@@ -31,7 +31,7 @@ export const loginUser: RequestHandler = async (req, res, next) => {
 };
 
 // 🔁 Refresh Token
-export const refreshAccessToken: RequestHandler = async (req, res, next) => {
+const refreshToken: RequestHandler = async (req, res, next) => {
   try {
     const token = req.cookies?.refreshToken;
     const result = await AuthServices.refreshToken(token);
@@ -48,7 +48,7 @@ export const refreshAccessToken: RequestHandler = async (req, res, next) => {
 };
 
 // 🔑 Change Password
-export const changePassword: RequestHandler = async (req, res, next) => {
+const changePassword: RequestHandler = async (req, res, next) => {
   try {
     const userId = (req.user as { userId: string }).userId;
     const { oldPassword, newPassword } =
@@ -68,7 +68,7 @@ export const changePassword: RequestHandler = async (req, res, next) => {
 };
 
 // ❓ Forget Password
-export const forgetPassword: RequestHandler = async (req, res, next) => {
+const forgetPassword: RequestHandler = async (req, res, next) => {
   try {
     const { email } = AuthValidations.forgetPasswordValidationSchema.parse(
       req.body,
@@ -87,7 +87,7 @@ export const forgetPassword: RequestHandler = async (req, res, next) => {
 };
 
 // 🔄 Reset Password
-export const resetPassword: RequestHandler = async (req, res, next) => {
+const resetPassword: RequestHandler = async (req, res, next) => {
   try {
     const { token, newPassword } =
       AuthValidations.resetPasswordValidationSchema.parse(req.body);
@@ -103,4 +103,12 @@ export const resetPassword: RequestHandler = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export const AuthControllers = {
+  loginUser,
+  changePassword,
+  refreshToken,
+  forgetPassword,
+  resetPassword,
 };
