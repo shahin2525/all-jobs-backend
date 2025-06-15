@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetPassword = exports.forgetPassword = exports.changePassword = exports.refreshToken = exports.loginUser = void 0;
+exports.AuthServices = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const auth_utils_1 = require("./auth.utils");
 // import { ILoginInput, ITokenPayload } from '../interfaces/auth.interface';
@@ -37,10 +37,10 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         isActive: user === null || user === void 0 ? void 0 : user.isActive,
         role: user === null || user === void 0 ? void 0 : user.role,
     };
-    const token = (0, auth_utils2_1.createToken)(jwtPayload, config_1.default.access_secret, config_1.default.jwt_access_expire_in);
+    const accessToken = (0, auth_utils2_1.createToken)(jwtPayload, config_1.default.access_secret, config_1.default.jwt_access_expire_in);
     const refreshToken = (0, auth_utils2_1.createToken)(jwtPayload, config_1.default.refresh_secret, config_1.default.jwt_refresh_expire_in);
     return {
-        token,
+        accessToken,
         refreshToken,
         // user: {
         //   _id: user._id,
@@ -49,7 +49,6 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         // },
     };
 });
-exports.loginUser = loginUser;
 // 🔁 Refresh Token
 const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -78,7 +77,6 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Invalid refresh token');
     }
 });
-exports.refreshToken = refreshToken;
 // 🔑 Change Password
 const changePassword = (userId, oldPassword, newPassword) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findById(userId);
@@ -99,7 +97,6 @@ const changePassword = (userId, oldPassword, newPassword) => __awaiter(void 0, v
     });
     return null;
 });
-exports.changePassword = changePassword;
 // ❓ Forget Password
 const forgetPassword = (email) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findOne({ email });
@@ -117,7 +114,6 @@ const forgetPassword = (email) => __awaiter(void 0, void 0, void 0, function* ()
     yield (0, auth_utils_1.sendResetPasswordEmail)(email, resetUrl);
     return { message: 'Reset password email sent' };
 });
-exports.forgetPassword = forgetPassword;
 // 🔄 Reset Password
 const resetPassword = (token, newPassword) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -135,4 +131,10 @@ const resetPassword = (token, newPassword) => __awaiter(void 0, void 0, void 0, 
         throw new appError_1.default(http_status_codes_1.StatusCodes.BAD_REQUEST, 'Invalid or expired token');
     }
 });
-exports.resetPassword = resetPassword;
+exports.AuthServices = {
+    loginUser,
+    changePassword,
+    refreshToken,
+    forgetPassword,
+    resetPassword,
+};
