@@ -1,12 +1,15 @@
 import { RequestHandler } from 'express';
 import { UserServices } from './user.service';
 import { StatusCodes } from 'http-status-codes';
+import { createUserValidationSchema } from './user.validation';
 
 // Create a new user
 const createUser: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body;
-    const result = await UserServices.createUserIntoDB(data);
+    const validatedData = createUserValidationSchema.parse(data);
+    const result = await UserServices.createUserIntoDB(validatedData);
+
     res.status(StatusCodes.OK).json({
       success: true,
       message: 'User registered successfully',

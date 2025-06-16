@@ -21,7 +21,7 @@ export type TUser = {
     company?: string; // For recruiters
     avatar?: string; // URL to image
   };
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 export type TUserRole = keyof typeof USER_ROLE;
