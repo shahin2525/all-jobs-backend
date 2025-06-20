@@ -6,7 +6,7 @@ import { createToken, verifyToken } from './auth.utils2';
 import config from '../../config';
 import { ILoginInput } from './auth.interface';
 import { User } from '../user/user.model';
-import AppError from '../../error/appError';
+import AppError from '../../errors/appError';
 import { StatusCodes } from 'http-status-codes';
 
 // 🔐 Login

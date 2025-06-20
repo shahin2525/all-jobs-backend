@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { TUserRole } from '../modules/user/user.interface';
-import AppError from '../error/appError';
+import AppError from '../errors/appError';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { StatusCodes } from 'http-status-codes';
 import config from '../config';
