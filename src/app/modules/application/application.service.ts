@@ -2,11 +2,11 @@ import { IApplication } from './application.interface';
 import { Application } from './application.model';
 import { Types } from 'mongoose';
 
-import httpStatus from 'http-status';
 import { JwtPayload } from 'jsonwebtoken';
 import { Job } from '../job/job.model';
 import { User } from '../user/user.model';
 import AppError from '../../errors/appError';
+import { StatusCodes } from 'http-status-codes';
 
 const createApplication = async (
   applicationData: IApplication,
@@ -15,13 +15,13 @@ const createApplication = async (
   // Verify the candidate exists
   const isCandidateExist = await User.findById(candidate.userId);
   if (!isCandidateExist) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Candidate not found');
+    throw new AppError(StatusCodes.NOT_FOUND, 'Candidate not found');
   }
 
   // Verify the job exists
   const isJobExist = await Job.findById(applicationData.jobId);
   if (!isJobExist) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Job not found');
+    throw new AppError(StatusCodes.NOT_FOUND, 'Job not found');
   }
 
   // Check if already applied
@@ -30,7 +30,7 @@ const createApplication = async (
     jobId: applicationData.jobId,
   });
   if (alreadyApplied) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Already applied to this job');
+    throw new AppError(StatusCodes.BAD_REQUEST, 'Already applied to this job');
   }
 
   const newApplication = await Application.create({
@@ -59,7 +59,7 @@ const getApplicationsForJob = async (
   const job = await Job.findOne({ _id: jobId, postedBy: user.userId });
   if (!job && user.role !== 'admin') {
     throw new AppError(
-      httpStatus.FORBIDDEN,
+      StatusCodes.FORBIDDEN,
       'Not authorized to view these applications',
     );
   }
@@ -79,7 +79,7 @@ const updateApplicationStatus = async (
 ): Promise<IApplication> => {
   const application = await Application.findById(applicationId);
   if (!application) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Application not found');
+    throw new AppError(StatusCodes.NOT_FOUND, 'Application not found');
   }
 
   // Verify the user owns the job or is admin
@@ -89,7 +89,7 @@ const updateApplicationStatus = async (
   });
   if (!job && user.role !== 'admin') {
     throw new AppError(
-      httpStatus.FORBIDDEN,
+      StatusCodes.FORBIDDEN,
       'Not authorized to update this application',
     );
   }
@@ -112,7 +112,7 @@ const updateApplicationStatus = async (
 
   if (!updatedApplication) {
     throw new AppError(
-      httpStatus.INTERNAL_SERVER_ERROR,
+      StatusCodes.INTERNAL_SERVER_ERROR,
       'Failed to update application',
     );
   }
@@ -128,7 +128,7 @@ const getApplicationById = async (
     await Application.findById(applicationId).populate('candidateId jobId');
 
   if (!application) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Application not found');
+    throw new AppError(StatusCodes.NOT_FOUND, 'Application not found');
   }
 
   // Verify access - candidate, job poster, or admin
@@ -142,7 +142,7 @@ const getApplicationById = async (
     });
     if (!isJobPoster) {
       throw new AppError(
-        httpStatus.FORBIDDEN,
+        StatusCodes.FORBIDDEN,
         'Not authorized to view this application',
       );
     }
@@ -164,7 +164,7 @@ const deleteApplication = async (
 ): Promise<void> => {
   const application = await Application.findById(applicationId);
   if (!application) {
-    throw new AppError(httpStatus.NOT_FOUND, 'Application not found');
+    throw new AppError(StatusCodes.NOT_FOUND, 'Application not found');
   }
 
   // Only candidate or admin can delete
@@ -173,15 +173,29 @@ const deleteApplication = async (
     user.role !== 'admin'
   ) {
     throw new AppError(
-      httpStatus.FORBIDDEN,
+      StatusCodes.FORBIDDEN,
       'Not authorized to delete this application',
     );
   }
 
   await Application.findByIdAndDelete(applicationId);
 };
+const getRecruiterJobApplications = async (
+  recruiterId: string,
+): Promise<IApplication[]> => {
+  const applications = await Application.find()
+    .populate({
+      path: 'jobId',
+      match: { postedBy: recruiterId },
+    })
+    .populate('candidateId');
+
+  // Filter only jobs that belong to this recruiter
+  return applications.filter((app) => app.jobId !== null);
+};
 
 export const ApplicationServices = {
+  getRecruiterJobApplications,
   createApplication,
   getCandidateApplications,
   getApplicationsForJob,
