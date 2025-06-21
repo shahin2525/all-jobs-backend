@@ -17,10 +17,10 @@
 
 // export const Job = model<IJob>('Job', JobSchema);
 import { Schema, model } from 'mongoose';
-import { IJob } from './job.interface'; // Your interface file
+import { IJob, IJobModel } from './job.interface'; // Your interface file
 
 // Define the schema
-const JobSchema = new Schema<IJob>(
+const JobSchema = new Schema<IJob, IJobModel>(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
@@ -73,5 +73,12 @@ const JobSchema = new Schema<IJob>(
   },
 );
 
+//
+// Add to your JobSchema methods
+JobSchema.statics.doesJobExist = async function (id: string) {
+  const job = await this.findById(id);
+  return job;
+};
+
 // Create and export the model
-export const Job = model<IJob>('Job', JobSchema);
+export const Job = model<IJob, IJobModel>('Job', JobSchema);

@@ -58,3 +58,10 @@ export interface IJob {
   postedAt?: Date; // ✅ Separate from createdAt (e.g., job reposted)
   expiresAt?: Date; // ✅ Auto-archive expired jobs
 }
+
+import { Model } from 'mongoose';
+
+export interface IJobModel extends Model<IJob> {
+  // eslint-disable-next-line no-unused-vars
+  doesJobExist(id: string): Promise<IJob | null>;
+}
