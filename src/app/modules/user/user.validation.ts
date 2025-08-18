@@ -51,11 +51,13 @@ export const createUserValidationSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   phone: z.string().optional(),
-  role: z.enum(userRoles, {
-    errorMap: () => ({
-      message: 'Role must be admin, recruiter, or candidate',
-    }),
-  }),
+  role: z
+    .enum(userRoles, {
+      errorMap: () => ({
+        message: 'Role must be admin, recruiter, or candidate',
+      }),
+    })
+    .default('candidate'),
   isActive: z.boolean().default(true),
   isVerified: z.boolean().default(false),
   lastLogin: z.date().optional(),

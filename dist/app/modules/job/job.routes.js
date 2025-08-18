@@ -1,1 +1,20 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.JobRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const job_controller_1 = require("./job.controller");
+const auth_1 = __importDefault(require("../../middlewares/auth"));
+const job_validation_1 = require("./job.validation");
+const validateRequest_1 = __importDefault(require("../../middlewares/validateRequest"));
+const user_const_1 = require("../user/user.const");
+const router = express_1.default.Router();
+router.post('/', (0, auth_1.default)(user_const_1.USER_ROLE.admin, user_const_1.USER_ROLE.recruiter), (0, validateRequest_1.default)(job_validation_1.JobValidation.jobCreateSchema), job_controller_1.JobController.createJob);
+router.get('/', job_controller_1.JobController.getAllJobs);
+router.get('/my-jobs', (0, auth_1.default)(user_const_1.USER_ROLE.admin, user_const_1.USER_ROLE.recruiter), job_controller_1.JobController.getMyJobs);
+router.get('/:id', job_controller_1.JobController.getSingleJob);
+router.patch('/:id', (0, auth_1.default)(user_const_1.USER_ROLE.admin, user_const_1.USER_ROLE.recruiter), (0, validateRequest_1.default)(job_validation_1.JobValidation.jobUpdateSchema), job_controller_1.JobController.updateJob);
+router.delete('/:id', (0, auth_1.default)(user_const_1.USER_ROLE.admin, user_const_1.USER_ROLE.recruiter), job_controller_1.JobController.deleteJob);
+exports.JobRoutes = router;

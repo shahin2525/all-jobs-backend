@@ -1,7 +1,4 @@
 "use strict";
-// import { Request, RequestHandler, Response } from 'express';
-// import { UserServices } from './user.service';
-// import { StatusCodes } from 'http-status-codes';
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -15,11 +12,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserController = void 0;
 const user_service_1 = require("./user.service");
 const http_status_codes_1 = require("http-status-codes");
+const user_validation_1 = require("./user.validation");
 // Create a new user
 const createUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const data = req.body;
-        const result = yield user_service_1.UserServices.createUserIntoDB(data);
+        const validatedData = user_validation_1.createUserValidationSchema.parse(data);
+        const result = yield user_service_1.UserServices.createUserIntoDB(validatedData);
         res.status(http_status_codes_1.StatusCodes.OK).json({
             success: true,
             message: 'User registered successfully',

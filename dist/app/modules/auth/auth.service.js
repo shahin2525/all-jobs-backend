@@ -19,7 +19,7 @@ const auth_utils_1 = require("./auth.utils");
 const auth_utils2_1 = require("./auth.utils2");
 const config_1 = __importDefault(require("../../config"));
 const user_model_1 = require("../user/user.model");
-const appError_1 = __importDefault(require("../../error/appError"));
+const appError_1 = __importDefault(require("../../errors/appError"));
 const http_status_codes_1 = require("http-status-codes");
 // 🔐 Login
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
