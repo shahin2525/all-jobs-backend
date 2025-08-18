@@ -1,17 +1,5 @@
-// import { Types } from 'mongoose';
-
 import { Types } from 'mongoose';
 
-// export interface IJob {
-//   title: string;
-//   description: string;
-//   company?: string;
-//   location?: string;
-//   source: 'own' | 'third-party';
-//   isCompliant: boolean;
-//   applyLink?: string;
-//   postedBy: Types.ObjectId;
-// }
 export interface IJob {
   _id?: string; // ✅ Good for MongoDB
 

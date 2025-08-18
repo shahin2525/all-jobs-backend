@@ -8,6 +8,7 @@ import { AuthServices } from './auth.service';
 const loginUser: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body;
+
     const validatedData = AuthValidations.loginUserValidationSchema.parse(data);
     const result = await AuthServices.loginUser(validatedData);
 
