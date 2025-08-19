@@ -12,7 +12,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
       // console.log(req.headers.authorization);
       // const token = req.headers.authorization?.split(' ')[1];
       const token = req.headers.authorization;
-      // console.log('token', token);
+      console.log('token', req.headers.authorization);
       if (!token) {
         throw new AppError(StatusCodes.UNAUTHORIZED, 'you are unauthorize 1');
       }
@@ -20,7 +20,7 @@ const auth = (...requiredRoles: TUserRole[]) => {
       // console.log('decod', decoded);
       const { email, role } = decoded as JwtPayload;
 
-      const user = await User.findOne(email);
+      const user = await User.findOne({ email });
       if (!user) {
         throw new AppError(StatusCodes.FORBIDDEN, 'you are unauthorize 2');
       }

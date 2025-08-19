@@ -16,7 +16,7 @@ const loginUser = async (payload: ILoginInput) => {
   const user = await User.findOne({ email }).select('+password');
   if (!user) throw new AppError(StatusCodes.NOT_FOUND, 'User not found');
   // console.log('service', email, password);
-  console.log('user', user);
+
   const isPasswordValid = await bcrypt.compare(password, user.password);
   if (!isPasswordValid)
     throw new AppError(StatusCodes.BAD_REQUEST, 'password does not match');
