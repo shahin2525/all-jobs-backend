@@ -1,27 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// import { z } from 'zod';
-// import { Types } from 'mongoose';
-
-// // Helper schema for MongoDB ObjectId validation
-// const objectIdSchema = z
-//   .string()
-//   .refine((value) => Types.ObjectId.isValid(value), {
-//     message: 'Invalid ObjectId',
-//   });
-
-// export const jobSchema = z.object({
-//   title: z.string().min(1, 'Title is required'),
-//   description: z.string().min(1, 'Description is required'),
-//   company: z.string().optional(),
-//   location: z.string().optional(),
-//   source: z.enum(['own', 'third-party']),
-//   isCompliant: z.boolean(),
-//   applyLink: z.string().url('Invalid URL format').optional(),
-//   postedBy: objectIdSchema,
-// });
-
-// // You can also create a type from the schema if needed
-// export type JobInput = z.infer<typeof jobSchema>;
 import { z } from 'zod';
 
 // Salary Range Schema (Optional)
@@ -29,62 +5,57 @@ const salaryRangeSchema = z
   .object({
     min: z.number().min(0, 'Minimum salary must be positive'),
     max: z.number().min(0, 'Maximum salary must be positive'),
-    currency: z.string().default('USD'),
+    currency: z.string().default('USD').optional(),
   })
   .optional();
 
 // Job Schema
-const jobCreateSchema = z.object({
-  body: z.object({
-    // Core Job Info (Required)
-    title: z.string().min(5, 'Title must be at least 5 characters'),
-    description: z.string().min(20, 'Description too short'),
-    company: z.string().min(2, 'Company name required'),
-    location: z.string().min(2, 'Location required'),
+export const jobCreateSchema = z.object({
+  body: z
+    .object({
+      // Core Job Info (Required)
+      title: z.string().min(5, 'Title must be at least 5 characters'),
+      description: z.string().min(20, 'Description too short'),
+      company: z.string().min(2, 'Company name required'),
+      location: z.string().min(2, 'Location required'),
 
-    // Salary (Optional)
-    salaryRange: salaryRangeSchema.refine(
-      (data) => !data || data.max >= data.min,
-      'Max salary must be >= min salary',
-    ),
+      // Salary (Optional)
+      salaryRange: salaryRangeSchema
+        .refine(
+          (data) => !data || data.max >= data.min,
+          'Max salary must be >= min salary',
+        )
+        .optional(),
 
-    // Job Type (Required)
-    employmentType: z.enum([
-      'full-time',
-      'part-time',
-      'contract',
-      'remote',
-      'internship',
-      'freelance',
-    ]),
+      // Job Type (Required)
+      employmentType: z.enum([
+        'full-time',
+        'part-time',
+        'contract',
+        'remote',
+        'internship',
+        'freelance',
+      ]),
 
-    // Job Source (Required)
-    source: z.enum(['own', 'third-party']),
-    applyLink: z
-      .string()
-      .url('Invalid URL')
-      .optional()
-      .superRefine((val, ctx) => {
-        // Access the full data using ctx.addIssue's path
-        const source = (ctx as any).parent.source; // Type assertion as workaround
-        if (source === 'third-party' && !val) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Apply link is required for third-party jobs',
-          });
-        }
-      }),
+      // Job Source (Required)
+      source: z.enum(['own', 'third-party']),
 
-    // Recruiter Info (Conditional)
-    postedBy: z.string().optional(), // Will be set from auth middleware
+      applyLink: z.string().url('Invalid URL').optional(),
 
-    // Job Metadata (Optional)
-    experienceLevel: z.enum(['entry', 'mid', 'senior', 'lead']).optional(),
-    educationRequired: z.array(z.string()).optional(),
-    skillsRequired: z
-      .array(z.string().min(1, 'Skill cannot be empty'))
-      .optional(),
-  }),
+      // Recruiter Info (Conditional)
+      // postedBy: z.string().optional(), // Will be set from auth middleware
+
+      // Job Metadata (Optional)
+      experienceLevel: z.enum(['entry', 'mid', 'senior', 'lead']).optional(),
+      educationRequired: z.array(z.string()).optional(),
+      skillsRequired: z
+        .array(z.string().min(1, 'Skill cannot be empty'))
+        .optional(),
+    })
+    .refine((data) => !(data.source === 'third-party' && !data.applyLink), {
+      message: 'Apply link is required for third-party jobs',
+      path: ['applyLink'], // Highlights the field in error
+    }),
 });
 
 const jobUpdateSchema = z.object({
@@ -117,19 +88,16 @@ const jobUpdateSchema = z.object({
 
     // Job Source (Optional for update)
     source: z.enum(['own', 'third-party']).optional(),
-    applyLink: z
-      .string()
-      .url('Invalid URL')
-      .optional()
-      .superRefine((val, ctx) => {
-        const source = (ctx as any).parent.source;
-        if (source === 'third-party' && !val) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'Apply link is required for third-party jobs',
-          });
-        }
-      }),
+    applyLink: z.string().url('Invalid URL').optional(),
+    // .superRefine((val, ctx) => {
+    //   const source = (ctx as any).parent.source;
+    //   if (source === 'third-party' && !val) {
+    //     ctx.addIssue({
+    //       code: z.ZodIssueCode.custom,
+    //       message: 'Apply link is required for third-party jobs',
+    //     });
+    //   }
+    // }),
 
     // Job Metadata (Optional)
     experienceLevel: z.enum(['entry', 'mid', 'senior', 'lead']).optional(),

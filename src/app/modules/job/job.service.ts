@@ -1,17 +1,15 @@
-import { JobValidation } from './job.validation';
 import { IJob } from './job.interface';
 import { Job } from './job.model';
 import { JwtPayload } from 'jsonwebtoken';
-import { z } from 'zod';
 
-const createJobIntoDB = async (
-  payload: z.infer<typeof JobValidation.jobCreateSchema>['body'],
-  user: JwtPayload,
-) => {
+const createJobIntoDB = async (payload: IJob, user: JwtPayload) => {
+  console.log('user', user);
   const jobData = {
     ...payload,
-    postedBy: user._id,
+    postedBy: user?.userId,
   };
+
+  // console.log(jobData);
   const result = await Job.create(jobData);
   return result;
 };

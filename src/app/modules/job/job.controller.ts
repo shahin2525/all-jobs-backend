@@ -6,10 +6,13 @@ import { JobServices } from './job.service';
 
 const createJob: RequestHandler = async (req, res, next) => {
   try {
-    const validatedData = JobValidation.jobCreateSchema.parse(req.body);
+    // const validatedData = JobValidation.jobCreateSchema.parse//(req.body);
+    // console.log('req.body', req.body);
+    // // const validatedData = JobValidation.jobCreateSchema.parse(req.body);
+    // console.log('validated data', validatedData);
     const user = req.user;
 
-    const result = await JobServices.createJobIntoDB(validatedData.body, user);
+    const result = await JobServices.createJobIntoDB(req.body, user);
 
     res.status(StatusCodes.OK).json({
       success: true,

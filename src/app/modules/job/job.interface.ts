@@ -1,8 +1,6 @@
 import { Types } from 'mongoose';
 
 export interface IJob {
-  _id?: string; // ✅ Good for MongoDB
-
   // Core Job Info
   title: string;
   description: string;
