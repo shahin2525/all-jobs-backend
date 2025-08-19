@@ -73,4 +73,10 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp: number) {
   return false;
 };
 
+// **Post-save middleware: Remove password from the response**
+userSchema.post('save', function (doc, next) {
+  doc.password = '';
+  next();
+});
+
 export const User = model('User', userSchema);
