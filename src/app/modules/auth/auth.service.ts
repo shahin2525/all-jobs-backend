@@ -143,7 +143,7 @@ const forgetPassword = async (email: string) => {
 
   await sendResetPasswordEmail(email, resetUrl);
 
-  return { message: 'Reset password email sent' };
+  return { message: 'Reset password email sent please check your email' };
 };
 
 // 🔄 Reset Password
