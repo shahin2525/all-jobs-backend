@@ -15,7 +15,7 @@ router.post(
   JobController.createJob,
 );
 
-router.get('/', JobController.getAllJobs);
+router.get('/', auth(USER_ROLE.admin), JobController.getAllJobs);
 
 router.get(
   '/my-jobs',
@@ -32,10 +32,6 @@ router.patch(
   JobController.updateJob,
 );
 
-router.delete(
-  '/:id',
-  auth(USER_ROLE.admin, USER_ROLE.recruiter),
-  JobController.deleteJob,
-);
+router.delete('/:id', auth(USER_ROLE.admin), JobController.deleteJob);
 
 export const JobRoutes = router;

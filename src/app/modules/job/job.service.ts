@@ -3,7 +3,6 @@ import { Job } from './job.model';
 import { JwtPayload } from 'jsonwebtoken';
 
 const createJobIntoDB = async (payload: IJob, user: JwtPayload) => {
-  console.log('user', user);
   const jobData = {
     ...payload,
     postedBy: user?.userId,
@@ -28,9 +27,10 @@ const updateJobFromDB = async (
   if (!job) {
     throw new Error('Job not found');
   }
-
+  console.log('job', job);
+  console.log('user', user);
   // Check if the user is the owner of the job
-  if (job.postedBy!.toString() !== user._id) {
+  if (job?.postedBy!.toString() !== user?.userId || user?.role !== 'admin') {
     throw new Error('Unauthorized to update this job');
   }
 

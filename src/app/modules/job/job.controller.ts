@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 
-import { JobValidation } from './job.validation';
 import StatusCodes from 'http-status-codes';
 import { JobServices } from './job.service';
 
@@ -31,7 +30,7 @@ const getAllJobs: RequestHandler = async (req, res, next) => {
 
     res.status(StatusCodes.OK).json({
       success: true,
-      message: 'Jobs retrieved successfully',
+      message: 'All Jobs retrieved successfully',
       statusCode: StatusCodes.OK,
       data: result,
     });
@@ -59,14 +58,10 @@ const getSingleJob: RequestHandler = async (req, res, next) => {
 const updateJob: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const validatedData = JobValidation.jobUpdateSchema.parse(req.body);
+    // const validatedData = JobValidation.jobUpdateSchema.parse(req.body);
     const user = req.user;
 
-    const result = await JobServices.updateJobFromDB(
-      id,
-      validatedData.body,
-      user,
-    );
+    const result = await JobServices.updateJobFromDB(id, req.body, user);
 
     res.status(StatusCodes.OK).json({
       success: true,
