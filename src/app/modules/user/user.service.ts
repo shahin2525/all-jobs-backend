@@ -16,8 +16,8 @@ const getSingleUserFromDB = async (id: string) => {
   //   if (!(await User.doesUserExists(id))) {
   //     throw new Error('User ID does not exist');
   //   }
-  const idExists = await User.findById({ _id: id });
-  if (idExists) {
+  const idExists = await User.findById(id);
+  if (!idExists) {
     throw new Error('User ID does not exist');
   }
   const result = await User.findById(id).select('-password');
@@ -35,8 +35,8 @@ const deleteUserFromDB = async (id: string) => {
   //   if (!(await User.doesUserExists(id))) {
   //     throw new Error('User ID does not exist');
   //   }
-  const idExists = await User.findById({ _id: id });
-  if (idExists) {
+  const idExists = await User.findById(id);
+  if (!idExists) {
     throw new Error('User ID does not exist');
   }
   const result = await User.findByIdAndDelete(id);

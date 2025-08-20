@@ -56,12 +56,12 @@ const getAllUsers: RequestHandler = async (req, res, next) => {
 const deleteUser: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const result = await UserServices.deleteUserFromDB(id);
+    await UserServices.deleteUserFromDB(id);
     res.status(StatusCodes.OK).json({
       success: true,
       message: 'User deleted successfully',
       statusCode: StatusCodes.OK,
-      data: result,
+      data: null,
     });
   } catch (error) {
     next(error);
