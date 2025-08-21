@@ -24,4 +24,12 @@ export type TUser = {
   createdAt?: Date;
   updatedAt?: Date;
 };
+
+export type TUserUpdateRequest = Partial<TUser> & {
+  firstName?: string;
+  lastName?: string;
+  skills?: string[];
+  company?: string;
+  avatar?: string;
+};
 export type TUserRole = keyof typeof USER_ROLE;

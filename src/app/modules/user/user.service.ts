@@ -1,4 +1,4 @@
-import { TUser } from './user.interface';
+import { TUser, TUserUpdateRequest } from './user.interface';
 import { User } from './user.model';
 
 // Create a new user
@@ -65,16 +65,25 @@ const getMyProfileFromDB = async (userId: string) => {
 //   }
 //   return user;
 // };
+
 const updateMyProfileInDB = async (
   userId: string,
-  updateData: Partial<TUser>,
+  updateData: TUserUpdateRequest, // Use any to accept flat properties
 ) => {
   const currentUser = await User.findById(userId);
   const currentUserRole = currentUser?.role;
-  // Handle nested updates properly
+
   const updateObject: Record<string, unknown> = {};
 
-  // Check if name properties are being updated
+  // Handle flat firstName and lastName properties
+  if (updateData.firstName) {
+    updateObject['name.firstName'] = updateData.firstName;
+  }
+  if (updateData.lastName) {
+    updateObject['name.lastName'] = updateData.lastName;
+  }
+
+  // Handle nested name object (for backward compatibility)
   if (updateData.name) {
     if (updateData.name.firstName) {
       updateObject['name.firstName'] = updateData.name.firstName;
@@ -84,7 +93,18 @@ const updateMyProfileInDB = async (
     }
   }
 
-  // Check if profile properties are being updated
+  // Handle flat profile properties
+  if (updateData.skills) {
+    updateObject['profile.skills'] = updateData.skills;
+  }
+  if (updateData.company) {
+    updateObject['profile.company'] = updateData.company;
+  }
+  if (updateData.avatar) {
+    updateObject['profile.avatar'] = updateData.avatar;
+  }
+
+  // Handle nested profile object (for backward compatibility)
   if (updateData.profile) {
     if (updateData.profile.skills) {
       updateObject['profile.skills'] = updateData.profile.skills;
@@ -104,6 +124,7 @@ const updateMyProfileInDB = async (
     'isActive',
     'isVerified',
   ];
+
   directProperties.forEach((prop) => {
     if (updateData[prop] !== undefined) {
       updateObject[prop] = updateData[prop];
