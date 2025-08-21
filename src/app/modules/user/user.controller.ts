@@ -71,7 +71,7 @@ const deleteUser: RequestHandler = async (req, res, next) => {
 // Get logged-in user's profile
 const getMyProfile: RequestHandler = async (req, res, next) => {
   try {
-    const userId = req.user._id; // comes from auth middleware
+    const userId = req.user.userId; // comes from auth middleware
     const result = await UserServices.getMyProfileFromDB(userId);
     res.status(StatusCodes.OK).json({
       success: true,
@@ -87,7 +87,7 @@ const getMyProfile: RequestHandler = async (req, res, next) => {
 // Update logged-in user's profile
 const updateMyProfile: RequestHandler = async (req, res, next) => {
   try {
-    const userId = req.user._id; // comes from auth middleware
+    const userId = req.user.userId; // comes from auth middleware
     const updateData = req.body;
     const result = await UserServices.updateMyProfileInDB(userId, updateData);
     res.status(StatusCodes.OK).json({

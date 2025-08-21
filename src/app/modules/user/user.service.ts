@@ -53,13 +53,76 @@ const getMyProfileFromDB = async (userId: string) => {
 };
 
 // Update my own profile
+// const updateMyProfileInDB = async (
+//   userId: string,
+//   updateData: Partial<TUser>,
+// ) => {
+//   const user = await User.findByIdAndUpdate(userId, updateData, {
+//     new: true,
+//   }).select('-password');
+//   if (!user) {
+//     throw new Error('Failed to update profile');
+//   }
+//   return user;
+// };
 const updateMyProfileInDB = async (
   userId: string,
   updateData: Partial<TUser>,
 ) => {
-  const user = await User.findByIdAndUpdate(userId, updateData, {
+  const currentUser = await User.findById(userId);
+  const currentUserRole = currentUser?.role;
+  // Handle nested updates properly
+  const updateObject: Record<string, unknown> = {};
+
+  // Check if name properties are being updated
+  if (updateData.name) {
+    if (updateData.name.firstName) {
+      updateObject['name.firstName'] = updateData.name.firstName;
+    }
+    if (updateData.name.lastName) {
+      updateObject['name.lastName'] = updateData.name.lastName;
+    }
+  }
+
+  // Check if profile properties are being updated
+  if (updateData.profile) {
+    if (updateData.profile.skills) {
+      updateObject['profile.skills'] = updateData.profile.skills;
+    }
+    if (updateData.profile.company) {
+      updateObject['profile.company'] = updateData.profile.company;
+    }
+    if (updateData.profile.avatar) {
+      updateObject['profile.avatar'] = updateData.profile.avatar;
+    }
+  }
+
+  // Handle other direct properties
+  const directProperties: (keyof TUser)[] = [
+    'email',
+    'phone',
+    'isActive',
+    'isVerified',
+  ];
+  directProperties.forEach((prop) => {
+    if (updateData[prop] !== undefined) {
+      updateObject[prop] = updateData[prop];
+    }
+  });
+
+  // Only allow admin to update role
+  if (updateData.role) {
+    if (currentUserRole === 'admin') {
+      updateObject.role = updateData.role;
+    } else {
+      throw new Error('Only admin can update user role');
+    }
+  }
+
+  const user = await User.findByIdAndUpdate(userId, updateObject, {
     new: true,
   }).select('-password');
+
   if (!user) {
     throw new Error('Failed to update profile');
   }

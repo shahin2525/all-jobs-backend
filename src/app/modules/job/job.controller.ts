@@ -79,13 +79,13 @@ const deleteJob: RequestHandler = async (req, res, next) => {
     const { id } = req.params;
     const user = req.user;
 
-    const result = await JobServices.deleteJobFromDB(id, user);
+    await JobServices.deleteJobFromDB(id, user);
 
     res.status(StatusCodes.OK).json({
       success: true,
       message: 'Job deleted successfully',
       statusCode: StatusCodes.OK,
-      data: result,
+      data: null,
     });
   } catch (error) {
     next(error);

@@ -47,7 +47,7 @@ const deleteJobFromDB = async (id: string, user: JwtPayload) => {
   }
 
   // Check if the user is the owner of the job
-  if (job.postedBy!.toString() !== user._id) {
+  if (user?.role !== 'admin' && job?.postedBy?.toString() !== user?.userId) {
     throw new Error('Unauthorized to delete this job');
   }
 
