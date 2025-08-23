@@ -1,53 +1,120 @@
-import { Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 export interface IJob {
-  // Core Job Info
+  // Core Info (Required for SEO)
   title: string;
+  slug: string; // SEO-friendly URL
+  shortDescription?: string; // 150 chars for previews
   description: string;
-  company: string;
-  location: string;
 
-  // Salary (Improved)
+  // Company Information (Required for Google Jobs)
+  companyName: string;
+  companyWebsite?: string;
+  companyLogo?: string;
+  companyIndustry?: string; // Moved from bottom for better organization
+
+  // Sector Info
+  sector: 'government' | 'non-government' | 'ngo' | 'public-sector';
+
+  // Location (Required for Google Jobs)
+  location: string;
+  jobLocation: {
+    // Made required for Google Jobs compliance
+    addressCountry: string;
+    addressRegion?: string;
+    addressLocality: string;
+    postalCode?: string;
+    streetAddress?: string;
+    latitude?: number; // Added for better geotargeting
+    longitude?: number; // Added for better geotargeting
+  };
+
+  // Salary (Required for Google Jobs in some regions)
   salaryRange?: {
     min: number;
     max: number;
-    currency?: string; // ✅ Add currency (USD, EUR, etc.)
-    //isDisclosed?: boolean; // ✅ "Salary negotiable" or "Not disclosed"
+    currency: string; // Made required if salaryRange exists
+    unitText: 'MONTH' | 'HOUR' | 'YEAR' | 'DAY'; // Added for structured data compliance
   };
+  benefits?: string[];
 
-  // Job Type (Enhanced)
+  // Job Details (Required for Google Jobs)
   employmentType:
-    | 'full-time'
-    | 'part-time'
-    | 'contract'
-    | 'remote'
-    | 'internship'
-    | 'freelance'; // ✅ Added 'freelance'
+    | 'FULL_TIME' // Changed to match Schema.org convention
+    | 'PART_TIME'
+    | 'CONTRACTOR'
+    | 'TEMPORARY'
+    | 'INTERN'
+    | 'VOLUNTEER'
+    | 'PER_DIEM'
+    | 'OTHER';
+  isRemoteAvailable: boolean; // Made required
 
-  // Job Source (Good!)
+  // Job Source
   source: 'own' | 'third-party';
-  applyLink?: string; // ✅ Required for third-party jobs
+  applyLink: string; // Made required for external applications
 
-  // Recruiter Info (Clarified)
-  postedBy?: Types.ObjectId;
+  // Recruiter Info
+  postedBy: Types.ObjectId;
 
-  // Job Metadata (Optional but Useful)
-  experienceLevel?: 'entry' | 'mid' | 'senior' | 'lead'; // ✅ Filter jobs by seniority
-  educationRequired?: string[]; // ✅ E.g., ["Bachelor's", "Master's"]
-  skillsRequired?: string[]; // ✅ Better than generic "tags"
+  // Metadata (Important for SEO)
+  experienceLevel?:
+    | 'ENTRY_LEVEL'
+    | 'MID_LEVEL'
+    | 'SENIOR_LEVEL'
+    | 'DIRECTOR'
+    | 'EXECUTIVE'; // Standardized
+  educationRequired?: string[];
+  skillsRequired?: string[];
+  requirements?: string[];
+  responsibilities?: string[];
+  niceToHave?: string[];
 
-  // Applicants Tracking
-  applicants?: string[]; // User _ids who applied
-  savedBy?: string[]; // ✅ User _ids who saved/bookmarked the job
+  // Application Settings
+  applicationDeadline?: Date;
+  applicationMethod: 'internal' | 'external'; // Made required
+  applyEmail?: string;
+  applicationInstructions?: string;
+  expectedResponseTime?: string;
+  interviewProcess?: string[];
 
-  // Timestamps (Good!)
-  postedAt?: Date; // ✅ Separate from createdAt (e.g., job reposted)
-  expiresAt?: Date; // ✅ Auto-archive expired jobs
+  // EEO Compliance (Important for Google Policies)
+  equalOpportunityStatement?: string;
+  visaSponsorshipAvailable?: boolean;
+
+  // Tracking
+  applicants?: string[];
+  savedBy?: string[];
+  viewsCount?: number;
+  clicksCount?: number;
+
+  // Visibility & Monetization
+  status: 'active' | 'expired' | 'draft' | 'pending' | 'rejected'; // Added rejected status
+  isFeatured?: boolean;
+  boostLevel?: 'normal' | 'featured' | 'sponsored';
+  premiumUntil?: Date;
+  autoRenew?: boolean;
+
+  // SEO (Improved structure)
+  metaTitle?: string;
+  metaDescription?: string;
+  canonicalUrl?: string;
+  tags?: string[];
+  category?: string;
+  subcategory?: string;
+  featuredImage?: string;
+  ogImage?: string;
+  structuredData?: Record<string, unknown>; // Changed to object for better handling
+
+  // Timestamps
+  postedAt: Date; // Made required
+  expiresAt: Date; // Made required
+  lastUpdatedAt?: Date; // Added for content freshness
 }
-
-import { Model } from 'mongoose';
 
 export interface IJobModel extends Model<IJob> {
   // eslint-disable-next-line no-unused-vars
   doesJobExist(id: string): Promise<IJob | null>;
+  // eslint-disable-next-line no-unused-vars
+  isJobCompliant(job: IJob): Promise<{ compliant: boolean; issues: string[] }>;
 }
