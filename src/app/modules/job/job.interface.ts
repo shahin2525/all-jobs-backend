@@ -40,14 +40,22 @@ export interface IJob {
 
   // Job Details (Required for Google Jobs)
   employmentType:
-    | 'FULL_TIME' // Changed to match Schema.org convention
-    | 'PART_TIME'
+    | 'FULL-TIME' // Changed to match Schema.org convention
+    | 'PART-TIME'
     | 'CONTRACTOR'
     | 'TEMPORARY'
     | 'INTERN'
     | 'VOLUNTEER'
-    | 'PER_DIEM'
-    | 'OTHER';
+    | 'PER-DIEM'
+    | 'OTHER'
+    | 'remote'
+    | 'internship'
+    | 'freelance';
+  // employmentType:
+  // | 'full-time'
+  // | 'part-time'
+  // | 'contract'
+  // ;
   isRemoteAvailable: boolean; // Made required
 
   // Job Source

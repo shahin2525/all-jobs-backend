@@ -1,7 +1,7 @@
 import { IJob } from './job.interface';
 import { Job } from './job.model';
 import { JwtPayload } from 'jsonwebtoken';
-
+import { FilterQuery } from 'mongoose';
 const createJobIntoDB = async (payload: IJob, user: JwtPayload) => {
   const jobData = {
     ...payload,
@@ -13,9 +13,67 @@ const createJobIntoDB = async (payload: IJob, user: JwtPayload) => {
   return result;
 };
 
-const getAllJobsFromDB = async () => {
-  const result = await Job.find().populate('postedBy');
-  return result;
+// const getAllJobsFromDB = async () => {
+//   const result = await Job.find().populate('postedBy');
+//   return result;
+// };
+
+interface IQueryOptions {
+  search?: string;
+  sort?: string;
+  page?: number;
+  limit?: number;
+  filters?: Record<string, unknown>;
+}
+
+const getAllJobsFromDB = async (options: IQueryOptions) => {
+  const { search, sort, page = 1, limit = 10, filters = {} } = options;
+
+  // ✅ 1. Build Mongoose query object
+  const query: FilterQuery<typeof Job> = {};
+
+  // ✅ Search (full-text index)
+  if (search) {
+    query.$text = { $search: search };
+  }
+
+  // ✅ Filtering
+  if (filters.sector) query.sector = filters.sector;
+  if (filters.employmentType) query.employmentType = filters.employmentType;
+  if (filters.location)
+    query.location = { $regex: filters.location, $options: 'i' };
+  if (filters.status) query.status = filters.status;
+
+  // ✅ Pagination
+  const skip = (page - 1) * limit;
+
+  // ✅ Sorting
+  let sortQuery: Record<string, 1 | -1> = { postedAt: -1 }; // Default: latest jobs first
+  if (sort) {
+    if (sort === 'salary-asc') sortQuery = { 'salaryRange.min': 1 };
+    if (sort === 'salary-desc') sortQuery = { 'salaryRange.max': -1 };
+    if (sort === 'recent') sortQuery = { postedAt: -1 };
+  }
+
+  // ✅ Execute query
+  const jobs = await Job.find(query)
+    .populate('postedBy', 'name email') // Only populate necessary fields
+    .sort(sortQuery)
+    .skip(skip)
+    .limit(limit);
+
+  // ✅ Count total for pagination meta
+  const total = await Job.countDocuments(query);
+
+  return {
+    data: jobs,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 const updateJobFromDB = async (

@@ -24,15 +24,40 @@ const createJob: RequestHandler = async (req, res, next) => {
   }
 };
 
-const getAllJobs: RequestHandler = async (req, res, next) => {
+// const getAllJobs: RequestHandler = async (req, res, next) => {
+//   try {
+//     const result = await JobServices.getAllJobsFromDB();
+
+//     res.status(StatusCodes.OK).json({
+//       success: true,
+//       message: 'All Jobs retrieved successfully',
+//       statusCode: StatusCodes.OK,
+//       data: result,
+//     });
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
+export const getAllJobs: RequestHandler = async (req, res, next) => {
   try {
-    const result = await JobServices.getAllJobsFromDB();
+    // Extract query params for search, filter, sort, and pagination
+    const { search, sort, page, limit, ...filters } = req.query;
+
+    const result = await JobServices.getAllJobsFromDB({
+      search: search as string,
+      sort: sort as string,
+      page: Number(page),
+      limit: Number(limit),
+      filters,
+    });
 
     res.status(StatusCodes.OK).json({
       success: true,
       message: 'All Jobs retrieved successfully',
       statusCode: StatusCodes.OK,
-      data: result,
+      data: result.data,
+      meta: result.meta,
     });
   } catch (error) {
     next(error);
