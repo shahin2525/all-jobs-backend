@@ -1,3 +1,4 @@
+import { AuthServices } from '../auth/auth.service';
 import { TUser, TUserUpdateRequest } from './user.interface';
 import { User } from './user.model';
 
@@ -7,8 +8,11 @@ const createUserIntoDB = async (payload: TUser) => {
   if (existsUser) {
     throw new Error('User already exists');
   }
-  const result = await User.create(payload);
-  return result;
+  await User.create(payload);
+  return await AuthServices.loginUser({
+    email: payload?.email,
+    password: payload?.password,
+  });
 };
 
 // Get a single user by ID

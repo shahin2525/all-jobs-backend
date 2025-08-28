@@ -3,11 +3,17 @@ import { UserController } from './user.controller';
 
 import { USER_ROLE } from './user.const';
 import auth from '../../middlewares/auth';
+import validateRequest from '../../middlewares/validateRequest';
+import { createUserValidationSchema } from './user.validation';
 
 const router = express.Router();
 
 // 🔓 Public route for registration
-router.post('/register', UserController.createUser);
+router.post(
+  '/register',
+  validateRequest(createUserValidationSchema),
+  UserController.createUser,
+);
 
 // 🔐 Protected route: logged-in user info
 router.get(

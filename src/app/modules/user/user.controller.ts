@@ -1,20 +1,29 @@
 import { RequestHandler } from 'express';
 import { UserServices } from './user.service';
 import { StatusCodes } from 'http-status-codes';
-import { createUserValidationSchema } from './user.validation';
+import config from '../../config';
 
 // Create a new user
 const createUser: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body;
-    const validatedData = createUserValidationSchema.parse(data);
-    const result = await UserServices.createUserIntoDB(validatedData);
+    // const validatedData = createUserValidationSchema.parse(data);
+    const result = await UserServices.createUserIntoDB(data);
+    const { refreshToken, accessToken } = result;
 
-    res.status(StatusCodes.OK).json({
+    res.cookie('refreshToken', refreshToken, {
+      secure: config.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: 'strict', // Changed from 'lax' to 'strict' for better security,
+
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    });
+
+    res.status(StatusCodes.CREATED).json({
       success: true,
       message: 'User registered successfully',
       statusCode: StatusCodes.CREATED,
-      data: result,
+      data: { accessToken },
     });
   } catch (error) {
     next(error);
