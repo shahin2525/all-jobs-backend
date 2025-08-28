@@ -7,6 +7,7 @@ import config from '../../config';
 const createUser: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body;
+    // console.log('data', data);
     // const validatedData = createUserValidationSchema.parse(data);
     const result = await UserServices.createUserIntoDB(data);
     const { refreshToken, accessToken } = result;

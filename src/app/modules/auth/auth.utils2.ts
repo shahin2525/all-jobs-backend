@@ -5,7 +5,10 @@ import { Types } from 'mongoose';
 export const createToken = (
   jwtPayload: {
     userId: Types.ObjectId;
-    name: { firstName: string; lastName: string } | null | undefined;
+    name:
+      | { firstName: string; lastName?: string | null | undefined }
+      | null
+      | undefined;
     email: string;
     isActive: boolean;
     role: 'admin' | 'recruiter' | 'candidate';
