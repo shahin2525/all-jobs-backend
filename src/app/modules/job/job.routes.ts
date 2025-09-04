@@ -36,19 +36,27 @@
 
 // export const JobRoutes = router;
 //
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { JobController } from './job.controller';
 import auth from '../../middlewares/auth';
 import { jobCreateSchema, jobUpdateSchema } from './job.validation';
 
 import { USER_ROLE } from '../user/user.const';
 import validateRequest from '../../middlewares/validateRequest';
+import { upload } from '../../utils/sendImageToCloudinary';
 
 const router = express.Router();
 
 router.post(
   '/',
   auth(USER_ROLE.admin, USER_ROLE.recruiter),
+  upload.single('file'),
+  (req: Request, res: Response, next: NextFunction) => {
+    console.log('routes2', req.file);
+    // console.log('routes1', req.body.data);
+    req.body = JSON.parse(req.body.data);
+    next();
+  },
   validateRequest(jobCreateSchema),
   JobController.createJob,
 );

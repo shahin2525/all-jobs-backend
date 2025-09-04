@@ -110,7 +110,7 @@ const JobSchema = new Schema<IJob, IJobModel>(
     },
 
     // Recruiter Info
-    postedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    postedBy: { type: Schema.Types.ObjectId, ref: 'User' },
 
     // Metadata
     experienceLevel: {

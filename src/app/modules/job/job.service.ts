@@ -1,23 +1,49 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 import { IJob } from './job.interface';
 import { Job } from './job.model';
 import { JwtPayload } from 'jsonwebtoken';
 import { FilterQuery } from 'mongoose';
-const createJobIntoDB = async (payload: IJob, user: JwtPayload) => {
-  const jobData = {
-    ...payload,
-    postedBy: user?.userId,
-  };
+// const createJobIntoDB = async (file: any, payload: IJob, user: JwtPayload) => {
+//   const imageName = `${payload?.companyName}${user?.userId}`;
+//   const path = file?.path;
+//   //send image to cloudinary
+//   const { secure_url } = await sendImageToCloudinary(imageName, path);
+//   const jobData = {
+//     ...payload,
+//     postedBy: user?.userId,
+//     companyLogo: secure_url,
+//   };
 
-  // console.log(jobData);
-  const result = await Job.create(jobData);
-  return result;
-};
+//   // console.log(jobData);
+//   const result = await Job.create(jobData);
+//   return result;
+// };
 
 // const getAllJobsFromDB = async () => {
 //   const result = await Job.find().populate('postedBy');
 //   return result;
 // };
+const createJobIntoDB = async (file: any, payload: IJob, user: JwtPayload) => {
+  let secureUrl = '';
+  console.log('file', file);
+  if (file?.path) {
+    const imageName = `${payload?.companyName}-${user?.userId}`;
+    const { secure_url } = await sendImageToCloudinary(imageName, file.path);
+    secureUrl = secure_url;
+    console.log('secure', secureUrl);
+  }
 
+  const jobData = {
+    ...payload,
+    postedBy: user?.userId,
+    companyLogo: secureUrl, // ✅ Fallback if no file
+  };
+
+  const result = await Job.create(jobData);
+  return result;
+};
 interface IQueryOptions {
   search?: string;
   sort?: string;

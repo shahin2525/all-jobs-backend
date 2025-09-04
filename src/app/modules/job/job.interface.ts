@@ -63,7 +63,7 @@ export interface IJob {
   applyLink: string; // Made required for external applications
 
   // Recruiter Info
-  postedBy: Types.ObjectId;
+  postedBy?: Types.ObjectId;
 
   // Metadata (Important for SEO)
   experienceLevel?:

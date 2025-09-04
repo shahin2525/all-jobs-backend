@@ -11,7 +11,7 @@ const createJob: RequestHandler = async (req, res, next) => {
     // console.log('validated data', validatedData);
     const user = req.user;
 
-    const result = await JobServices.createJobIntoDB(req.body, user);
+    const result = await JobServices.createJobIntoDB(req.file, req.body, user);
 
     res.status(StatusCodes.OK).json({
       success: true,
