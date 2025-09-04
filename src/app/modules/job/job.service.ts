@@ -27,12 +27,11 @@ import { FilterQuery } from 'mongoose';
 // };
 const createJobIntoDB = async (file: any, payload: IJob, user: JwtPayload) => {
   let secureUrl = '';
-  console.log('file', file);
+
   if (file?.path) {
     const imageName = `${payload?.companyName}-${user?.userId}`;
     const { secure_url } = await sendImageToCloudinary(imageName, file.path);
     secureUrl = secure_url;
-    console.log('secure', secureUrl);
   }
 
   const jobData = {

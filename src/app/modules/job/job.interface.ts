@@ -60,7 +60,9 @@ export interface IJob {
 
   // Job Source
   source: 'own' | 'third-party';
-  applyLink: string; // Made required for external applications
+
+  applyLink?: string; // Made required for external applications
+  sourceName?: string;
 
   // Recruiter Info
   postedBy?: Types.ObjectId;

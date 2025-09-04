@@ -157,7 +157,16 @@ const applyLinkRefinement = (data: any) => {
   }
   return true;
 };
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const sourceNameRefinement = (data: any) => {
+  if (
+    data.source === 'third-party' &&
+    (!data.sourceName || data.sourceName.trim() === '')
+  ) {
+    return false;
+  }
+  return true;
+};
 // Base Job Schema for creation
 export const jobCreateSchema = z.object({
   body: z
@@ -232,6 +241,7 @@ export const jobCreateSchema = z.object({
         .url('Apply link must be a valid URL')
         .optional()
         .or(z.literal('')),
+      sourceName: z.string().optional().or(z.literal('')),
 
       // Recruiter Info (will be set from auth token)
       postedBy: objectIdSchema.optional(),
@@ -321,6 +331,10 @@ export const jobCreateSchema = z.object({
     .refine(applyLinkRefinement, {
       message: 'Apply link is required for third-party jobs',
       path: ['applyLink'],
+    })
+    .refine(sourceNameRefinement, {
+      message: 'Source name is required for third party job',
+      path: ['sourceName'],
     }),
 });
 

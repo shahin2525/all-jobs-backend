@@ -108,6 +108,13 @@ const JobSchema = new Schema<IJob, IJobModel>(
       },
       trim: true,
     },
+    sourceName: {
+      type: String,
+      required: function () {
+        return this.source === 'third-party';
+      },
+      trim: true,
+    },
 
     // Recruiter Info
     postedBy: { type: Schema.Types.ObjectId, ref: 'User' },

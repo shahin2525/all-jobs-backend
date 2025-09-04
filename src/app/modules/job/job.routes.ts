@@ -52,8 +52,6 @@ router.post(
   auth(USER_ROLE.admin, USER_ROLE.recruiter),
   upload.single('file'),
   (req: Request, res: Response, next: NextFunction) => {
-    console.log('routes2', req.file);
-    // console.log('routes1', req.body.data);
     req.body = JSON.parse(req.body.data);
     next();
   },
