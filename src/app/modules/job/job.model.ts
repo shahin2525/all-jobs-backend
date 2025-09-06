@@ -267,6 +267,8 @@ JobSchema.statics.isJobCompliant = async function (job: IJob) {
   if (!job.jobLocation?.addressLocality) issues.push('Locality is required');
   if (!job.applyLink && job.source === 'third-party')
     issues.push('Apply link is required for third-party jobs');
+  if (!job.sourceName && job.source === 'third-party')
+    issues.push('source Name is required for third-party jobs');
 
   const discriminatoryTerms = [
     /gender|sex|male|female|man|woman|pregnant|marital status|marriage|civil partnership|race|racial|ethnic|ethnicity|color|national origin|nationality|religion|belief|creed|age|disability|sexual orientation|LGBT|gay|lesbian|bisexual|transgender/i,
